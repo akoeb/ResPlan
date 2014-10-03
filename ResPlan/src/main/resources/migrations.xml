@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="1" author="akoeb">
+    	<!--  table ACCOUNT  -->
+        <createTable tableName="accounts" remarks="account information for login">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="login" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_code" type="varchar(100)" defaultValue="USER" remarks="(USER, ADMIN)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table PERSON  -->
+        <createTable tableName="persons" remarks="general information of users and customers">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>           
+            <column name="first_name" type="varchar(255)" />
+            <column name="last_name" type="varchar(255)" />
+            <column name="birthday" type="date" />
+            <!--  foreign key added later -->
+            <column name="address_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>  
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table USER  -->
+        <createTable tableName="users" remarks="a user interacting with the system">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--  foreign keys added later -->
+            <column name="person_id" type="bigint">  
+                <constraints nullable="false"/>
+            </column>  
+            <column name="account_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>  
+            <column name="status_code" type="varchar(100)" defaultValue="ACTIVE" remarks="(ACTIVE, INACTIVE, CLOSED)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table CUSTOMER  -->
+        <createTable tableName="customers" remarks="a customer for whom users are providing service">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--  foreign keys added later -->
+            <column name="person_id" type="bigint">  
+                <constraints nullable="false"/>
+            </column>  
+            <column name="status_code" type="varchar(100)" defaultValue="ACQUISITION" remarks="(ACQUISITION, ACTIVE, INACTIVE, CLOSED)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        
+        <!--  table ADDRESS  -->
+        <createTable tableName="addresses" remarks="an address record for a person">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+			<column name="line_1" type="varchar(255)" />
+			<column name="line_2" type="varchar(255)" />
+			<column name="zip" type="varchar(255)" />
+			<column name="city" type="varchar(255)" />
+			<column name="country_code" type="varchar(3)" />
+			<column name="phone" type="varchar(255)" ></column>
+			<column name="fax" type="varchar(255)" />
+
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp()" />
+        </createTable>
+        
+        <!--  table WORK_CATEGORIES  -->
+        <createTable tableName="work_categories" remarks="a category of service that can be provided">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar(255)" />
+			<column name="description" type="varchar(1000)" />
+			<column name="color" type="varchar(255)" />
+
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        
+        <!--  table USER_WORK_CATEGORIES  -->
+        <createTable tableName="user_work_categories" remarks="mapping table for users and their offered work categories">
+            <!--  foreign keys added later -->       
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_category_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+		</createTable>
+        <!--  table DATES  -->
+        <createTable tableName="dates" remarks="general date, either from user or customer">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+			<column name="weekday" type="varchar(10)" remarks="(MONDAY-SUNDAY) - for repeating schedules"/>
+			<column name="date" type="date" remarks="for one-time schedules" />
+			<column name="type" type="varchar(10)" remarks="(REPEATING, ONE_TIME)"/>
+			<column name="start_time" type="time"/>
+			<column name="duration" type="int" remarks="duration in minutes"/>
+
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table USER_AVAILABLE_DATES  -->
+        <createTable tableName="user_available_dates" remarks="these are the dates a user is available for service">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--  foreign keys added later -->       
+            <column name="date_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)" remarks="(WORK, AWAY) - working or planned absence" />
+			<column name="description" type="varchar(1000)" />
+            
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table CUSTOMER_REQUIRED_DATES  -->
+        <createTable tableName="customer_required_dates" remarks="these are the dates that a customer requires service">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--  foreign keys added later -->       
+            <column name="date_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_category_id" type="bigint" />
+            <column name="address_id" type="varchar(255)" remarks="location of service, if empty, the location is customer address" >
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        <!--  table CUSTOMER_USER_DATES  -->
+        <createTable tableName="customer_user_dates" remarks="mapping table for user_dates and customer_dates with sort order">
+            <!--  foreign keys added later -->       
+            <column name="user_date_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_date_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="int" remarks="sort order" />
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+        
+        <!--  table SCHEDULES  -->
+        <createTable tableName="schedules" remarks="these are the actual defined schedules, mostly generated automatically">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!--  foreign keys added later -->       
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address_id" type="varchar(255)" remarks="location of service" >
+                <constraints nullable="true"/>
+            </column>
+            <column name="work_category_id" type="bigint" />
+            <column name="datetime" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="int" remarks="duration of the service in minutes">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+       <!--  table SCHEDULE_NOTES  -->
+        <createTable tableName="schedule_notes" remarks="notes to a schedule">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!--  foreign keys added later -->       
+            <column name="schedule_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="bigint" remarks="person id of whoever made the note">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datetime" type="datetime" remarks="when was the note being written">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="varchar(1000)" />
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp" />
+            <column name="modified" type="timestamp default current_timestamp on update current_timestamp" />
+        </createTable>
+
+		<!--  and now add all the foreign keys -->
+		<addForeignKeyConstraint baseColumnNames="address_id"
+            baseTableName="persons"
+            constraintName="fk_person_address"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="addresses"/>		        
+
+		<addForeignKeyConstraint baseColumnNames="person_id"
+            baseTableName="users"
+            constraintName="fk_user_person"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="persons"/>      
+
+		<addForeignKeyConstraint baseColumnNames="account_id"
+            baseTableName="users"
+            constraintName="fk_user_account"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="accounts"/> 
+
+		<addForeignKeyConstraint baseColumnNames="person_id"
+            baseTableName="customers"
+            constraintName="fk_customer_person"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="persons"/>      
+        
+        <addForeignKeyConstraint baseColumnNames="user_id"
+            baseTableName="user_work_categories"
+            constraintName="fk_work_categories_user"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="users"/>
+            
+        <addForeignKeyConstraint baseColumnNames="work_category_id"
+            baseTableName="user_work_categories"
+            constraintName="fk_user_work_categories_2"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="work_categories"/>
+            
+        <addForeignKeyConstraint baseColumnNames="user_id"
+            baseTableName="user_available_dates"
+            constraintName="fk_user_available_dates_1"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="users"/>
+            
+        <addForeignKeyConstraint baseColumnNames="date_id"
+            baseTableName="user_available_dates"
+            constraintName="fk_user_available_dates_2"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="dates"/>
+            
+        <addForeignKeyConstraint baseColumnNames="customer_id"
+            baseTableName="customer_required_dates"
+            constraintName="fk_customer_required_dates_1"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="customers"/>
+            
+        <addForeignKeyConstraint baseColumnNames="date_id"
+            baseTableName="customer_required_dates"
+            constraintName="fk_customer_required_dates_2"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="dates"/>
+            
+        <addForeignKeyConstraint baseColumnNames="customer_date_id"
+            baseTableName="customer_user_dates"
+            constraintName="fk_customer_user_dates_1"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="customer_required_dates"/>
+            
+        <addForeignKeyConstraint baseColumnNames="user_date_id"
+            baseTableName="customer_user_dates"
+            constraintName="fk_customer_user_dates_2"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="user_available_dates"/>
+            
+        <addForeignKeyConstraint baseColumnNames="user_id"
+            baseTableName="schedules"
+            constraintName="fk_schedules_users"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="users"/>
+
+        <addForeignKeyConstraint baseColumnNames="customer_id"
+            baseTableName="schedules"
+            constraintName="fk_schedules_customers"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="customers"/>
+
+        <addForeignKeyConstraint baseColumnNames="address_id"
+            baseTableName="schedules"
+            constraintName="fk_schedules_addess"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="addresses"/>
+
+        <addForeignKeyConstraint baseColumnNames="work_category_id"
+            baseTableName="schedules"
+            constraintName="fk_schedules_work_categories"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="work_categories"/>
+
+        <addForeignKeyConstraint baseColumnNames="schedule_id"
+            baseTableName="schedule_notes"
+            constraintName="fk_schedule_notes_schedules"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="schedules"/>
+
+        <addForeignKeyConstraint baseColumnNames="person_id"
+            baseTableName="schedule_notes"
+            constraintName="fk_schedule_notes_persons"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="persons"/>
+            
+            
+    </changeSet>
+</databaseChangeLog>

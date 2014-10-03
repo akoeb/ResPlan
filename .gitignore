@@ -1,0 +1,39 @@
+target/
+bin/
+*.jar
+*.war
+*.ear
+*.class
+*.pdf
+*.swp
+.~lock.*
+
+# some documentation for the planning
+doc/**
+
+# eclipse specific git ignore
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# local database
+ResPlan/ResPlan.db.mv.db
+ResPlan/ResPlan.db.trace.db
+ResPlan/backup.sql

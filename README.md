@@ -1,12 +1,14 @@
 = ResPlan =
 
-A resource planning REST-application based on dropwizard.
+A resource planning REST-application based on dropwizard. 
+
+**UNDER CONSTRUCTION**
 
 == Description ==
 
 This is a REST based application for managing customers with need of attention and human resources and their availability.
 
-Originally this is written for a caretaker service to manage the employees and the services provided to the customers.
+Originally this is written for a caretaker service to manage the employees and the services times with their customers.
 However, it should be useful for any kind of scennario where employees or users need to be brought together with customers based on time requirements of customers and availability of users.
 
 It is a self-contained jar file based on dropwizard which can run on a single workstation or as a server with internet access.

@@ -3,6 +3,7 @@ package me.koeb.ResPlan.integration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import liquibase.exception.LiquibaseException;
 import me.koeb.ResPlan.ResPlanApplication;
 import me.koeb.ResPlan.ResPlanConfiguration;
 import me.koeb.ResPlan.core.Address;
@@ -47,7 +49,7 @@ public class UserIntegrationTest {
 	
     @ClassRule
     public static final DropwizardAppRule<ResPlanConfiguration> RULE =
-            new DropwizardAppRule<>(ResPlanApplication.class, resourceFilePath("/home/koebi/projects/einsatzplanung/ResPlan/ResPlan.yml"));
+            new DropwizardAppRule<>(ResPlanApplication.class, resourceFilePath("ResPlan.yml"));
     
     private String URL;
 
@@ -56,7 +58,9 @@ public class UserIntegrationTest {
     private UserDAO dao;
     
     @Before
-    public void setup() throws ClassNotFoundException {
+    public void setup() throws ClassNotFoundException, LiquibaseException, SQLException {
+    	//migrate();
+    	
     	URL = String.format("http://localhost:%d/user", RULE.getLocalPort());
     	client = new Client();
     	ResPlanConfiguration configuration = RULE.getConfiguration();
@@ -69,7 +73,7 @@ public class UserIntegrationTest {
          // make sure we have at least one user before tests begin
         user = dao.createUser(firstUser);
     }
-    
+        
     
     @Test
     public void createUserWorksCorrectly() {
@@ -149,6 +153,7 @@ public class UserIntegrationTest {
     	User newUser = userGenerator();
     	newUser.setUserId(user.getUserId());
     	newUser.setPersonId(user.getPersonId());
+    	newUser.setAccountId(user.getAccountId());
     	newUser.setAddressId(user.getAddress().getId());
 
     	// run an update query with this user object
@@ -247,13 +252,13 @@ public class UserIntegrationTest {
     	int id = counter.getAndIncrement();
     	
   
-    	LocalDate birthday = new LocalDate("1993-07-10");
+    	LocalDate birthday = new LocalDate("1993-05-10");
      	
-    	return new User(id, "ACTIVE", 0, "First Name #"+ id,
-    			"Last Name #" + id,
-    			new Address(0, "Line1 #" +id, "Line2 #"+id, 
-    					"Zip #"+id, "City #"+id, "DE", 
-    					"Phone #"+ id, "Fax #"+id), 
+    	return new User(id, "ACTIVE", 0, 0, "User First Name #"+ id,
+    			"User Last Name #" + id,
+    			new Address(0, "User Line1 #" +id, "User Line2 #"+id, 
+    					"User Zip #"+id, "User City #"+id, "DE", 
+    					"User Phone #"+ id, "User Fax #"+id), 
     			birthday);
     }
 }

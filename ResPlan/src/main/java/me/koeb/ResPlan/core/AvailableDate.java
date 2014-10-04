@@ -4,7 +4,7 @@
 package me.koeb.ResPlan.core;
 
 import java.sql.Time;
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 
 /**
@@ -20,9 +20,9 @@ public class AvailableDate extends AbstractDate {
 	
 	
 	public AvailableDate(long availableDateId, String availabilityType, String description, 
-			long abstractDateId, String weekday, Date date, String type,
+			long abstractDateId, String weekday, LocalDate day, String type,
 			Time startTime, int duration) {
-		super(abstractDateId, weekday, date, type, startTime, duration);
+		super(abstractDateId, weekday, day, type, startTime, duration);
 		this.availableDateId = availableDateId;
 		this.availabilityType = availabilityType;
 		this.description = description;

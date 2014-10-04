@@ -3,8 +3,6 @@
  */
 package me.koeb.ResPlan.core;
 
-import java.util.Set;
-
 import org.joda.time.LocalDate;
 
 /**
@@ -14,7 +12,7 @@ import org.joda.time.LocalDate;
 public class Customer extends Person{
 	private long customerId;
 	private String statusCode;
-	private Set<RequiredDate> requiredDates;
+	//private Set<RequiredDate> requiredDates;
 
 	public Customer(long customerId, String statusCode, long personId, 
 			String firstName, String lastName,
@@ -54,51 +52,63 @@ public class Customer extends Person{
 	/**
 	 * @return the requiredDates
 	 */
-	public Set<RequiredDate> getRequiredDates() {
-		return requiredDates;
-	}
+	//public Set<RequiredDate> getRequiredDates() {
+	//	return requiredDates;
+	//}
 	/**
 	 * @param requiredDates the requiredDates to set
 	 */
-	public void setRequiredDates(Set<RequiredDate> requiredDates) {
-		this.requiredDates = requiredDates;
-	}
+	//public void setRequiredDates(Set<RequiredDate> requiredDates) {
+	//	this.requiredDates = requiredDates;
+	//}
 
 	
 	public String toString() {
 		return "{customerId: "+ customerId +
 			   ", statusCode: "+ statusCode +
-			   ", person: { id: " + personId +
-			   ", firstName: "+ firstName +
-			   ", lastName: "+ lastName +
-			   ", birthday: " + birthday +
-			   ", address: { id: "+ address.getId() +
-			   ", line1: " + address.getLine1() +
-			   ", line2: " + address.getLine2() +
-			   ", zip: " + address.getZip() +
-			   ", city: " + address.getCity() +
-			   ", countryCode: " + address.getCountryCode() +
-			   ", phone: " + address.getPhone() +
-			   ", fax: " + address.getFax() +
-			   "}}}";
+			   ", person: " + super.toString() +
+			   ", address: " + address.toString() + "}";
 	}
 	
-	// need this for comparison and contains searches:
-	public boolean equals(Object obj){
-		
-		if(this == obj)
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if((obj == null) || (obj.getClass() != this.getClass()))
+		if (!super.equals(obj))
 			return false;
-		
-		// object must be Customer at this point
-		Customer that = (Customer)obj;
-		
-		return this.toString().equals(that.toString());
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (customerId != other.customerId)
+			return false;
+		//if (requiredDates == null) {
+		//	if (other.requiredDates != null)
+		//		return false;
+		//} else if (!requiredDates.equals(other.requiredDates))
+		//	return false;
+		if (statusCode == null) {
+			if (other.statusCode != null)
+				return false;
+		} else if (!statusCode.equals(other.statusCode))
+			return false;
+		return true;
 	}
 
-	public int hashCode()
-	{
-		return 7 * this.toString().hashCode();
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (int) (customerId ^ (customerId >>> 32));
+		//result = prime * result
+		//		+ ((requiredDates == null) ? 0 : requiredDates.hashCode());
+		result = prime * result
+				+ ((statusCode == null) ? 0 : statusCode.hashCode());
+		return result;
 	}
 }

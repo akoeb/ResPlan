@@ -1,0 +1,18 @@
+{
+	"userId": 177,
+	"statusCode": "ACTIVE",
+	"personId": 355,
+	"accountId": 777,
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "address": {
+        "id": 687,
+        "line1": "Address Line 1",
+        "line2": "Address Line 2",
+        "zip": "Zip",
+        "city": "City",
+        "countryCode": "DE",
+        "phone": "Phone",
+        "fax": "Fax" },
+    "birthday": [1993, 7, 10]
+}

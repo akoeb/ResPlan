@@ -114,6 +114,47 @@ public class Person {
 	public void setAddressId(long id) {
 		this.address.setId(id);
 	}
-
 	
+	public String toString() {
+		return "{firstName: "+ firstName +
+			   ", lastName: "+ lastName +
+			   ", birthday: " + birthday +
+			   ", address: " + address.toString() + "}";
+	}
+
+	// need this for comparison and contains searches:
+	public boolean equals(Object obj){
+		
+		if(this == obj)
+			return true;
+		if((obj == null) || (obj.getClass() != this.getClass()))
+			return false;
+		
+		// object must be Customer at this point
+		Person that = (Person)obj;
+
+		if (this.personId == that.personId &&
+			  ( this.firstName == that.firstName ||
+				this.firstName != null && this.firstName.equals(that.firstName)) &&
+			  (	this.lastName == that.lastName ||
+				this.lastName != null && this.lastName.equals(that.lastName)) &&
+			  (	this.address == that.address ||
+				this.address != null && this.address.equals(that.address)) &&
+			  (	this.birthday == that.birthday ||
+				this.birthday != null && this.birthday.equals(that.birthday)) ) {
+			return true;
+		}
+		return false;
+	}
+
+	public int hashCode()
+	{
+		int hash = 7;
+		hash = 31 * hash + (int)(this.personId ^ (this.personId >>> 32));
+		hash = 31 * hash + (null == firstName ? 0 : firstName.hashCode());
+		hash = 31 * hash + (null == lastName ? 0 : lastName.hashCode());
+		hash = 31 * hash + (null == address ? 0 : address.hashCode());
+		hash = 31 * hash + (null == birthday ? 0 : birthday.hashCode());
+		return hash;
+	}
 }

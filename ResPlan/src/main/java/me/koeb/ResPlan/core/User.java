@@ -3,8 +3,6 @@
  */
 package me.koeb.ResPlan.core;
 
-import java.util.Set;
-
 import org.joda.time.LocalDate;
 
 /**
@@ -14,15 +12,16 @@ import org.joda.time.LocalDate;
 public class User extends Person{
 	private long userId;
 	private String statusCode;
-	private Account account;
-	private Set<AvailableDate> availableDates;
-	private Set <Category> possibleWorkCategories;
+	private long accountId;
+	//private Set<AvailableDate> availableDates;
+	//private Set <Category> possibleWorkCategories;
 
-	public User(long userId, String statusCode, long personId, 
+	public User(long userId, String statusCode, long accountId, long personId, 
 			String firstName, String lastName,
 			Address address, LocalDate birthday) 
 	{
 		super(personId, firstName, lastName, address, birthday);
+		this.accountId = accountId;
 		this.userId = userId;
 		this.statusCode = statusCode;
 	}
@@ -38,7 +37,7 @@ public class User extends Person{
 	/**
 	 * @param customerId the customerId to set
 	 */
-	public void setCUserId(long userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 	/**
@@ -53,68 +52,101 @@ public class User extends Person{
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
 	}
-	public Account getAccount() {
-		return account;
+	/**
+	 * get account id. This can return null in case accountid is 0
+	 * @return the account id or null
+	 */
+	public long getAccountId() {
+		return accountId;
 	}
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setAccountId(long accountId) {
+		this.accountId = accountId;
 	}
 	/**
 	 * @return the requiredDates
 	 */
-	public Set<AvailableDate> getAvailableDates() {
-		return availableDates;
-	}
+	//public Set<AvailableDate> getAvailableDates() {
+	//	return availableDates;
+	//}
 	/**
 	 * @param requiredDates the requiredDates to set
 	 */
-	public void setAvailableDates(Set<AvailableDate> availableDates) {
-		this.availableDates = availableDates;
-	}
+	//public void setAvailableDates(Set<AvailableDate> availableDates) {
+	//	this.availableDates = availableDates;
+	//}
 
 	
-	public Set <Category> getPossibleWorkCategories() {
-		return possibleWorkCategories;
-	}
-	public void setPossibleWorkCategories(Set <Category> possibleWorkCategories) {
-		this.possibleWorkCategories = possibleWorkCategories;
-	}
+	//public Set <Category> getPossibleWorkCategories() {
+	//	return possibleWorkCategories;
+	//}
+	//public void setPossibleWorkCategories(Set <Category> possibleWorkCategories) {
+	//	this.possibleWorkCategories = possibleWorkCategories;
+	//}
 	
-	// TODO ACCOUNT
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
 	public String toString() {
-		return "{customerId: "+ userId +
-			   ", statusCode: "+ statusCode +
-			   ", person: { id: " + personId +
-			   ", firstName: "+ firstName +
-			   ", lastName: "+ lastName +
-			   ", birthday: " + birthday +
-			   ", address: { id: "+ address.getId() +
-			   ", line1: " + address.getLine1() +
-			   ", line2: " + address.getLine2() +
-			   ", zip: " + address.getZip() +
-			   ", city: " + address.getCity() +
-			   ", countryCode: " + address.getCountryCode() +
-			   ", phone: " + address.getPhone() +
-			   ", fax: " + address.getFax() +
-			   "}}}";
+		return "{userId: "+ userId +
+				   ", statusCode: "+ statusCode +
+				   ", accountId: " + accountId +
+				   ", person: " + super.toString() +
+				   ", address: " + address.toString() + "}";
 	}
 	
-	// need this for comparison and contains searches:
-	public boolean equals(Object obj){
-		
-		if(this == obj)
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if((obj == null) || (obj.getClass() != this.getClass()))
+		if (!super.equals(obj))
 			return false;
-		
-		// object must be Customer at this point
-		User that = (User)obj;
-		
-		return this.toString().equals(that.toString());
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (accountId != other.accountId)
+			return false;
+		//if (availableDates == null) {
+		//	if (other.availableDates != null)
+		//		return false;
+		//} else if (!availableDates.equals(other.availableDates))
+		//	return false;
+		//if (possibleWorkCategories == null) {
+		//	if (other.possibleWorkCategories != null)
+		//		return false;
+		//} else if (!possibleWorkCategories.equals(other.possibleWorkCategories))
+		//	return false;
+		if (statusCode == null) {
+			if (other.statusCode != null)
+				return false;
+		} else if (!statusCode.equals(other.statusCode))
+			return false;
+		if (userId != other.userId)
+			return false;
+		return true;
 	}
 
-	public int hashCode()
-	{
-		return 23 * this.toString().hashCode();
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (int) (accountId ^ (accountId >>> 32));
+		//result = prime * result
+		//		+ ((availableDates == null) ? 0 : availableDates.hashCode());
+		//result = prime
+		//		* result
+		//		+ ((possibleWorkCategories == null) ? 0
+		//				: possibleWorkCategories.hashCode());
+		result = prime * result
+				+ ((statusCode == null) ? 0 : statusCode.hashCode());
+		result = prime * result + (int) (userId ^ (userId >>> 32));
+		return result;
 	}
 }

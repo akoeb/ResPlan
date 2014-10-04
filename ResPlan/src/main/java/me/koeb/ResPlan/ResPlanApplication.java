@@ -7,9 +7,11 @@ package me.koeb.ResPlan;
 import org.skife.jdbi.v2.DBI;
 
 import me.koeb.ResPlan.dao.CustomerDAO;
+import me.koeb.ResPlan.dao.UserDAO;
 import me.koeb.ResPlan.health.TemplateHealthCheck;
 import me.koeb.ResPlan.resources.CustomerResource;
 import me.koeb.ResPlan.resources.HelloWorldResource;
+import me.koeb.ResPlan.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
@@ -62,8 +64,11 @@ public class ResPlanApplication extends Application<ResPlanConfiguration>
             
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "h2");
-        final CustomerDAO dao = jdbi.onDemand(CustomerDAO.class);
-        environment.jersey().register(new CustomerResource(dao));
+        final CustomerDAO customerDAO = jdbi.onDemand(CustomerDAO.class);
+        environment.jersey().register(new CustomerResource(customerDAO));
+        
+        final UserDAO userDAO = jdbi.onDemand(UserDAO.class);
+        environment.jersey().register(new UserResource(userDAO));
     }
 
 }

@@ -78,7 +78,7 @@ public interface PersonDAO  {
 
 	@SqlUpdate("update customers "
 			+ "set "
-			+ "person_id=:personId, "
+			+ "person_id = :personId, "
 			+ "status_code = :statusCode "
 			+ "where id = :id")
 	public void updateCustomer(@Bind("id") long id, @Bind("personId") long personId, @Bind("statusCode") String statusCode); 
@@ -87,5 +87,25 @@ public interface PersonDAO  {
 	@SqlUpdate("delete from customers where id = :id")
 	public void deleteCustomer(@Bind("id") long id);
 
+	
+	@SqlUpdate("insert into users "
+			+ "(person_id, status_code, account_id)"
+			+ " values "
+			+ "(:personId, :statusCode, :accountId)")
+	@GetGeneratedKeys
+	public long insertUser(@Bind("personId") long personId, @Bind("statusCode") String statusCode, @Bind("accountId") Long accountId); 
+
+
+	@SqlUpdate("update users "
+			+ "set "
+			+ "person_id = :personId, "
+			+ "status_code = :statusCode, "
+			+ "account_id = :accountId "
+			+ "where id = :id")
+	public void updateUser(@Bind("id") long id, @Bind("personId") long personId, @Bind("statusCode") String statusCode, @Bind("accountId") Long accountId); 
+	
+
+	@SqlUpdate("delete from users where id = :id")
+	public void deleteUser(@Bind("id") long id);
 	
 }

@@ -7,7 +7,6 @@ package me.koeb.ResPlan.dao;
 import java.util.List;
 
 import me.koeb.ResPlan.core.Address;
-import me.koeb.ResPlan.core.Customer;
 import me.koeb.ResPlan.core.RequiredDate;
 import me.koeb.ResPlan.core.User;
 
@@ -23,32 +22,23 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
  */
 @RegisterMapper(UserResultMapper.class)
 public abstract class UserDAO implements PersonDAO {
-
-	@SqlQuery("select p.id as person_id, "
+	private static final String USER_FIELDLIST = "p.id as person_id, "
 			+ "p.first_name, p.last_name, p.birthday, "
-			+ "u.id as user_id, u.status_code, "
+			+ "u.id as user_id, u.status_code, u.account_id, "
 			+ "a.id as address_id, a.line_1, a.line_2, a.zip, "
-			+ "a.city, a.country_code, a.phone, a.fax, "
-			+ "ac.id as account_id, ac.login, ac.password, "
-			+ "ac.role_code, ac.email "
-			+ "from users u, persons p, addresses a, account ac "
-			+ "where c.person_id = p.id "
-			+ "and p.address_id = a.id "
-			+ "and u.account_id = ac.id")
+			+ "a.city, a.country_code, a.phone, a.fax ";
+
+	@SqlQuery("select " + USER_FIELDLIST
+			+ "from users u, persons p, addresses a "
+			+ "where u.person_id = p.id "
+			+ "and p.address_id = a.id ")
 	public abstract List<User> getAllUsers();
 	
 	
-	@SqlQuery("select p.id as person_id, "
-			+ "p.first_name, p.last_name, p.birthday, "
-			+ "u.id as user_id, u.status_code, "
-			+ "a.id as address_id, a.line_1, a.line_2, a.zip, "
-			+ "a.city, a.country_code, a.phone, a.fax, "
-			+ "ac.id as account_id, ac.login, ac.password, "
-			+ "ac.role_code, ac.email "
-			+ "from users u, persons p, addresses a, account ac "
-			+ "where c.person_id = p.id "
+	@SqlQuery("select " + USER_FIELDLIST
+			+ "from users u, persons p, addresses a "
+			+ "where u.person_id = p.id "
 			+ "and p.address_id = a.id "
-			+ "and u.account_id = ac.id "
 			+ "and u.id = :id ")
 	public abstract User findUserById(@Bind("id") long id);
 	
@@ -60,18 +50,16 @@ public abstract class UserDAO implements PersonDAO {
 	 * @param id
 	 * @return
 	 */
-	@SqlQuery("SELECT r.id as required_date_id, "
-			+ "ad.type, ad.description "
-			+ "c.id as category_id, c.name, c.description, c.colour "
+	@SqlQuery("SELECT ad.id as available_date_id, "
+			+ "ad.availability_type, ad.description, "
 			+ "d.id as date_id, "
 			+ "d.weekday, d.date, d.type, d.start_time, d.duration, "
 			+ "a.id as address_id, a.line_1, a.line_2, a.zip, "
 			+ "a.city, a.country_code, a.phone, a.fax "
-			+ "FROM addresses a, dates d, user_available_dates ad, work_categories c "
+			+ "FROM addresses a, dates d, user_available_dates ad "
 			+ "WHERE r.customer_id = :id "
-			+ "AND r.date_id = d.id "
-			+ "AND d.address_id = a.id "
-			+ "AND r.work_category_id = c.id")
+			+ "AND ad.date_id = d.id "
+			+ "AND d.address_id = a.id ")
 	@Mapper(AvailableDateResultMapper.class)
 	public abstract List<RequiredDate> getAvailableDatesForUser(@Bind("id") long id);
 
@@ -95,29 +83,35 @@ public abstract class UserDAO implements PersonDAO {
 		 
 		 user.setPersonId(personId);
 		 
-		 long userId = insertCustomer(personId, user.getStatusCode());
+		 // the accountId may be null, in which case the primitive accountId would be 0
+		 Long accountId = user.getAccountId();
+		 if (accountId == 0) {
+			 accountId = null;
+		 }
+		 
+		 long userId = insertUser(personId, user.getStatusCode(), accountId);
 		 user.setUserId(userId);
 		 
 		 return user;
 	}
 	
 	@Transaction()
-	public void updateCustomer(Customer customer) {
+	public void updateUser(User user) {
 		 
 		 // three tables are involved: address, person and customer
 		 
-		 Address address = customer.getAddress();
+		 Address address = user.getAddress();
 		 updateAddress(address.getId(),
 				 address.getLine1(), address.getLine2(), address.getZip(), 
 				 address.getCity(), address.getCountryCode(), address.getPhone(), 
 				 address.getFax());
 		 		 
-		 updatePerson(customer.getPersonId(), customer.getFirstName(), 
-				 customer.getLastName(), address.getId(), 
-				 new java.sql.Date(customer.getBirthday().toDate().getTime()));
+		 updatePerson(user.getPersonId(), user.getFirstName(), 
+				 user.getLastName(), address.getId(), 
+				 new java.sql.Date(user.getBirthday().toDate().getTime()));
 		 
 		 
-		 updateCustomer(customer.getPersonId(), customer.getPersonId(), customer.getStatusCode());
+		 updateUser(user.getPersonId(), user.getPersonId(), user.getStatusCode(), user.getAccountId());
 		 
 	}
 	

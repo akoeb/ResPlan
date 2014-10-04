@@ -3,6 +3,7 @@ package me.koeb.ResPlan.integration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import liquibase.exception.LiquibaseException;
 import me.koeb.ResPlan.ResPlanApplication;
 import me.koeb.ResPlan.ResPlanConfiguration;
 import me.koeb.ResPlan.core.Address;
@@ -47,7 +49,7 @@ public class CustomerIntegrationTest {
 	
     @ClassRule
     public static final DropwizardAppRule<ResPlanConfiguration> RULE =
-            new DropwizardAppRule<>(ResPlanApplication.class, resourceFilePath("/home/koebi/projects/einsatzplanung/ResPlan/ResPlan.yml"));
+            new DropwizardAppRule<>(ResPlanApplication.class, resourceFilePath("ResPlan.yml"));
     
     private String URL;
 
@@ -56,7 +58,9 @@ public class CustomerIntegrationTest {
     private CustomerDAO dao;
     
     @Before
-    public void setup() throws ClassNotFoundException {
+    public void setup() throws ClassNotFoundException, LiquibaseException, SQLException{
+        //migrate();
+    
     	URL = String.format("http://localhost:%d/customer", RULE.getLocalPort());
     	client = new Client();
     	ResPlanConfiguration configuration = RULE.getConfiguration();
@@ -249,11 +253,11 @@ public class CustomerIntegrationTest {
   
     	LocalDate birthday = new LocalDate("1993-07-10");
      	
-    	return new Customer(id, "ACTIVE", 0, "First Name #"+ id,
-    			"Last Name #" + id,
-    			new Address(0, "Line1 #" +id, "Line2 #"+id, 
-    					"Zip #"+id, "City #"+id, "DE", 
-    					"Phone #"+ id, "Fax #"+id), 
+    	return new Customer(id, "ACTIVE", 0, "Customer First Name #"+ id,
+    			"Customer Last Name #" + id,
+    			new Address(0, "Customer Line1 #" +id, "Customer Line2 #"+id, 
+    					"Customer Zip #"+id, "Customer City #"+id, "DE", 
+    					"Customer Phone #"+ id, "Customer Fax #"+id), 
     			birthday);
     }
 }

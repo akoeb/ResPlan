@@ -1,7 +1,7 @@
 package me.koeb.ResPlan.core;
 
 import java.sql.Time;
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 
 
@@ -9,18 +9,18 @@ import java.util.Date;
 public abstract class AbstractDate {
 	 private long abstractDateId;
 	 private String weekday;
-	 private Date date;
+	 private LocalDate day;
 	 private String type; // (REPEATING or ONE_TIME)
 	 private Time startTime;
 	 private int duration;
 	 
 	 
-	public AbstractDate(long abstractDateId, String weekday, Date date, String type,
+	public AbstractDate(long abstractDateId, String weekday, LocalDate day, String type,
 			Time startTime, int duration) {
 		super();
 		this.abstractDateId = abstractDateId;
 		this.weekday = weekday;
-		this.date = date;
+		this.day = day;
 		this.type = type;
 		this.startTime = startTime;
 		this.duration = duration;
@@ -52,14 +52,14 @@ public abstract class AbstractDate {
 	/**
 	 * @return the date
 	 */
-	public Date getDate() {
-		return date;
+	public LocalDate getDay() {
+		return day;
 	}
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDay(LocalDate day) {
+		this.day = day;
 	}
 	/**
 	 * @return the type

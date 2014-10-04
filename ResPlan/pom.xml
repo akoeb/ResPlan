@@ -57,7 +57,40 @@
     </dependency>
   </dependencies>
   
+  
    <build>
+     <pluginManagement>
+     <plugins>
+             <!--This plugin's configuration is used to store Eclipse 
+                m2e settings only. It has no influence on the Maven build itself. -->
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.liquibase</groupId>
+                                    <artifactId>liquibase-maven-plugin</artifactId>
+                                    <versionRange>[1.0,)</versionRange>
+                                    <goals>
+                                        <goal>dropAll</goal>
+                                        <goal>update</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute />
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>
+    </plugins>
+  </pluginManagement>  
+   
    <plugins>
    	  <plugin>
    	     <groupId>org.apache.maven.plugins</groupId>
@@ -116,6 +149,31 @@
         </archive>
     </configuration>
 </plugin>
+   <plugin>
+	  <groupId>org.liquibase</groupId>
+	  <artifactId>liquibase-maven-plugin</artifactId>
+	  <version>3.0.5</version>
+	  		   <executions>
+			 <execution>
+			   <phase>process-test-resources</phase>  
+			   <configuration>
+                 <changeLogFile>src/main/resources/migrations.xml</changeLogFile>
+                 <driver>org.h2.Driver</driver>
+                 <url>jdbc:h2:./ResPlan.db</url>
+                 <username>sa</username>
+                 <password></password>
+                 <dropFirst>false</dropFirst>
+                 <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                 <logging>info</logging>
+               </configuration>                                                                
+			   <goals>
+				 <goal>dropAll</goal>
+				 <goal>update</goal>
+			   </goals>
+			 </execution>
+		   </executions>
+	               
+    </plugin>
    </plugins>
    </build>
 </project>
